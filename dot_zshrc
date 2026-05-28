@@ -32,6 +32,7 @@ eval "$(zoxide init zsh)"
 
 alias ls=lsd
 alias la="lsd -a"
+alias tree="lsd --tree"
 alias cat=bat
 alias clr=clear
 alias gcl="git clone"
