@@ -28,6 +28,7 @@ setopt SHARE_HISTORY
 setopt HIST_VERIFY
 
 eval "$(oh-my-posh init zsh --config ~/.poshthemes/amro.omp.json)"
+#eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 
 alias ls=lsd
@@ -42,3 +43,10 @@ alias ga="git add"
 alias gch="git checkout"
 alias gpo="git push origin"
 alias find=fd
+
+#pfetch setting
+export PF_INFO="ascii title os wm kernel uptime memory palette"
+export PF_SOURCE=""
+export PF_CUSTOM_LOGOS="/home/Ctas/.config/pfetch/custom_logo"
+export PF_ASCII="ctas"
+export PF_FAST_PKG_COUNT=1

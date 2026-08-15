@@ -15,11 +15,73 @@ M.plugins = {
 	-- ЦВЕТОВЫЕ СХЕМЫ (priority)
 	-- ==========================
 	{
-		"Shatur/neovim-ayu",
+		"catppuccin/nvim",
+		name = "catppuccin",
 		priority = 1000, -- Загружается ДО всех UI-плагинов
 		lazy = false, -- Не ленивая загрузка для colorscheme
-		config = function()
-			vim.cmd("colorscheme ayu")
+		opts = {
+			flavour = "mocha",
+			background = {
+				light = "latte",
+				dark = "mocha",
+			},
+			integrations = {
+				cmp = true,
+				gitsigns = true,
+				nvimtree = true,
+				telescope = { enabled = true },
+				bufferline = true,
+				lualine = true,
+				treesitter = true,
+				native_lsp = {
+					enabled = true,
+					virtual_text = {
+						errors = { "italic" },
+						hints = { "italic" },
+						warnings = { "italic" },
+						information = { "italic" },
+					},
+					underlines = {
+						errors = { "underline" },
+						hints = { "underline" },
+						warnings = { "underline" },
+						information = { "underline" },
+					},
+				},
+				which_key = true,
+				mason = true,
+				aerial = true,
+				alpha = false,
+				dashboard = false,
+				flash = true,
+				fugitive = true,
+				gitgutter = false,
+				grug_far = false,
+				harpoon = true,
+				headlines = false,
+				illuminate = true,
+				indent_blankline = { enabled = true },
+				leap = false,
+				lightspeed = false,
+				lsp_trouble = true,
+				markdown = true,
+				mini = true,
+				neogit = true,
+				neotest = true,
+				neotree = false,
+				noice = true,
+				notify = true,
+				semantic_tokens = true,
+				snacks = false,
+				treesitter_context = true,
+				ufo = true,
+				vim_sneer = false,
+				window_picker = false,
+			},
+		},
+		config = function(_, opts)
+			require("catppuccin").setup(opts)
+			vim.cmd.colorscheme("catppuccin")
 		end,
 	},
 
@@ -35,7 +97,7 @@ M.plugins = {
 		opts = {
 			options = {
 				icons_enabled = true,
-				theme = "ayu",
+				theme = "auto",
 				component_separators = { left = "", right = "" },
 				section_separators = { left = "", right = "" },
 				disabled_filetypes = { statusline = {}, winbar = {} },
@@ -90,10 +152,11 @@ M.plugins = {
 	-- ==========================
 	{
 		"akinsho/bufferline.nvim",
-		dependencies = { "nvim-tree/nvim-web-devicons" },
+		dependencies = { "nvim-tree/nvim-web-devicons", "catppuccin/nvim" },
 		event = "VeryLazy",
 		opts = {
 			options = {
+				theme = "catppuccin",
 				numbers = "none",
 				close_command = "bdelete! %d",
 				right_mouse_command = "bdelete! %d",
@@ -138,14 +201,31 @@ M.plugins = {
 	-- ==========================
 	-- NVIM-TREE (файловый менеджер)
 	-- ==========================
+
 	{
 		"nvim-tree/nvim-tree.lua",
-		dependencies = { "nvim-tree/nvim-web-devicons" },
-		cmd = { "NvimTreeToggle", "NvimTreeOpen", "NvimTreeClose", "NvimTreeFocus" },
-		keys = { { "<leader>e", ":NvimTreeToggle<CR>", desc = "Toggle NvimTree" } },
-		opts = {},
+		version = "*",
+		dependencies = {
+			"nvim-tree/nvim-web-devicons",
+		},
+		opts = {
+			sync_root_with_cwd = true,
+			update_focused_file = {
+				enable = true,
+				update_root = true,
+				ignore_list = {},
+			},
+			renderer = {
+				group_empty = true,
+				highlight_git = true,
+				root_folder_label = ":t",
+			},
+			view = {
+				width = 30,
+				side = "left",
+			},
+		},
 	},
-
 	-- ==========================
 	-- VIM-TERMINAL / CSS-COLOR
 	-- ==========================

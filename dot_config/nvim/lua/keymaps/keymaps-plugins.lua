@@ -6,6 +6,7 @@ local map = vim.keymap.set
 -- NvimTree
 map('n', '<leader>e', ':NvimTreeToggle<CR>', { noremap = true, silent = true, desc = 'Toggle NvimTree' })
 
+
 -- Bufferline
 map('n', '<leader>w', ':BufferLineCycleNext<CR>', { noremap = true, silent = true, desc = 'Next buffer' })
 map('n', '<leader>s', ':BufferLineCyclePrev<CR>', { noremap = true, silent = true, desc = 'Prev buffer' })
