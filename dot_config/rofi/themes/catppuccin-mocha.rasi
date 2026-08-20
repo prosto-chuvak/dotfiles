@@ -1,0 +1,111 @@
+* {
+    base:     #1e1e2e;
+    mantle:   #181825;
+    surface0: #313244;
+    surface1: #45475a;
+    text:     #cdd6f4;
+    subtext:  #a6adc8;
+    mauve:    #cba6f7;
+    pink:     #f5c2e7;
+    red:      #f38ba8;
+    green:    #a6e3a1;
+
+    background-color: var(base);
+    text-color: var(text);
+    border-color: var(mauve);
+    border-radius: 5px;
+    font: "FiraCode Nerd Font 12";
+}
+
+window {
+    width: 760px;
+    height: 350px;
+	 location: center;
+    border: 4px;
+    padding: 13px;
+}
+
+mainbox {
+    background-color: transparent;
+}
+
+inputbar {
+    background-color: var(mantle);
+    padding: 9px 13px;
+    margin-bottom: 8px;
+}
+
+prompt {
+    background-color: transparent;
+    text-color: var(pink);
+    font: "JetBrainsMono Nerd Font Bold 10";
+}
+
+textbox {
+    background-color: transparent;
+}
+
+entry {
+    background-color: transparent;
+}
+
+listview {
+    background-color: transparent;
+    lines: 8;
+    columns: 1;
+    fixed-height: true;
+    padding: 0;
+}
+
+element {
+    background-color: var(surface0);
+    text-color: var(text);
+    padding: 8px 11px;
+    margin: 3px;
+}
+
+element normal.urgent,
+element alternate.urgent {
+    text-color: var(red);
+}
+
+element normal.active,
+element alternate.active {
+    text-color: var(green);
+}
+
+element selected.normal,
+element selected.alternate {
+    background-color: var(mauve);
+    text-color: var(base);
+}
+
+element selected.urgent {
+    background-color: var(red);
+    text-color: var(base);
+}
+
+element selected.active {
+    background-color: var(green);
+    text-color: var(base);
+}
+
+element-icon {
+    background-color: transparent;
+    size: 21px;
+    margin: 0 8px 0 0;
+}
+
+element-text {
+    background-color: transparent;
+    text-color: inherit;
+}
+
+scrollbar {
+    background-color: var(surface1);
+    width: 4px;
+}
+
+handle {
+    background-color: var(mauve);
+}

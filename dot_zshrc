@@ -5,10 +5,10 @@
 source ~/Repos/znap/znap.zsh  # Start Znap
 
 # Created by newuser for 5.9
-export PATH=$PATH:/home/Ctas/.local/bin
+export PATH=$PATH:/home/ctas/.local/bin
 export PATH="$HOME/bin:$PATH"
 export EDITOR=nvim
-# export PATH=$PATH:/home/Ctas/Downloads/zen
+export PATH=$PATH:/home/ctas/Downloads/zen
 
 # Znap plugins
 znap source marlonrichert/zsh-autocomplete
@@ -47,6 +47,6 @@ alias find=fd
 #pfetch setting
 export PF_INFO="ascii title os wm kernel uptime memory palette"
 export PF_SOURCE=""
-export PF_CUSTOM_LOGOS="/home/Ctas/.config/pfetch/custom_logo"
+export PF_CUSTOM_LOGOS="/home/ctas/.config/pfetch/custom_logo"
 export PF_ASCII="ctas"
 export PF_FAST_PKG_COUNT=1
