@@ -1,0 +1,5 @@
+[search]
+languages = ["ru", "en"]
+
+[updates]
+download_languages = ["ru", "en"]
