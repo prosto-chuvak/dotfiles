@@ -1,15 +1,13 @@
 * {
     base:     #1e1e2e;
-    mantle:   #181825;
+    mantle:   #2a2a3f;
     surface0: #313244;
     surface1: #45475a;
     text:     #cdd6f4;
     subtext:  #a6adc8;
-    mauve:    #cba6f7;
+    mauve:    #cba6f7; /**/
     pink:     #f5c2e7;
-    red:      #f38ba8;
-    green:    #a6e3a1;
-
+  
     background-color: var(base);
     text-color: var(text);
     border-color: var(mauve);
@@ -38,7 +36,7 @@ inputbar {
 prompt {
     background-color: transparent;
     text-color: var(pink);
-    font: "JetBrainsMono Nerd Font Bold 10";
+    font: "FiraCode Nerd Font Bold 12";
 }
 
 textbox {
@@ -47,6 +45,7 @@ textbox {
 
 entry {
     background-color: transparent;
+	 border-radius: 0;
 }
 
 listview {
@@ -58,35 +57,15 @@ listview {
 }
 
 element {
-    background-color: var(surface0);
+    /*background-color: var(surface0);*/
     text-color: var(text);
     padding: 8px 11px;
     margin: 3px;
 }
 
-element normal.urgent,
-element alternate.urgent {
-    text-color: var(red);
-}
-
-element normal.active,
-element alternate.active {
-    text-color: var(green);
-}
-
 element selected.normal,
 element selected.alternate {
     background-color: var(mauve);
-    text-color: var(base);
-}
-
-element selected.urgent {
-    background-color: var(red);
-    text-color: var(base);
-}
-
-element selected.active {
-    background-color: var(green);
     text-color: var(base);
 }
 
@@ -108,4 +87,8 @@ scrollbar {
 
 handle {
     background-color: var(mauve);
+}
+
+case-indicator {
+    background-color: transparent;
 }

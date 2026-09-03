@@ -9,7 +9,7 @@ export PATH=$PATH:/home/ctas/.local/bin
 export PATH="$HOME/bin:$PATH"
 export EDITOR=nvim
 export PATH=$PATH:/home/ctas/Downloads/zen
-
+export PATH="$HOME/.cargo/bin:$PATH"
 # Znap plugins
 znap source marlonrichert/zsh-autocomplete
 znap source zsh-users/zsh-syntax-highlighting
@@ -43,6 +43,7 @@ alias ga="git add"
 alias gch="git checkout"
 alias gpo="git push origin"
 alias find=fd
+alias man='LANG=ru_RU.UTF-8 man'
 
 #pfetch setting
 export PF_INFO="ascii title os wm kernel uptime memory palette"

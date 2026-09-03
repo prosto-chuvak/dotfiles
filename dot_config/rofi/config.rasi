@@ -1,5 +1,6 @@
 configuration {
     show-icons: true;
+	 display-drun: "drun: ";
 }
 
 @theme "catppuccin-mocha"
