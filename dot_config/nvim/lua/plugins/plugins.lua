@@ -4,11 +4,9 @@
 local M = {}
 
 -- Вспомогательная функция для создания спецификации плагина
+---@diagnostic disable: undefined-global
 ---@param spec table
 ---@return table
-local function plugin(spec)
-	return spec
-end
 
 M.plugins = {
 	-- ==========================
@@ -156,13 +154,12 @@ M.plugins = {
 		event = "VeryLazy",
 		opts = {
 			options = {
-				theme = "catppuccin",
 				numbers = "none",
 				close_command = "bdelete! %d",
 				right_mouse_command = "bdelete! %d",
 				left_mouse_command = "buffer %d",
 				middle_mouse_command = nil,
-				indicator = { style = "underline" },
+				indicator = { style = "none" },
 				modified_icon = "●",
 				close_icon = "",
 				left_trunc_marker = "",
@@ -259,12 +256,22 @@ M.plugins = {
 	},
 
 	-- ==========================
-	-- LSP & MASON
+	-- LSP
 	-- ==========================
-	{ "neovim/nvim-lspconfig",             lazy = true },
-	{ "williamboman/mason.nvim",           cmd = "Mason" },
-	{ "williamboman/mason-lspconfig.nvim", dependencies = { "williamboman/mason.nvim", "neovim/nvim-lspconfig" }, lazy = true },
-
+	{
+		"neovim/nvim-lspconfig",
+		event = { "BufReadPre", "BufNewFile" },
+		dependencies = { "hrsh7th/cmp-nvim-lsp" },
+		config = function()
+			local ok, cmp_lsp = pcall(require, "cmp_nvim_lsp")
+			if ok then
+				vim.lsp.config("*", {
+					capabilities = cmp_lsp.default_capabilities(),
+				})
+			end
+			vim.lsp.enable({ "lua_ls", "bashls", "rust_analyzer" })
+		end,
+	},
 	-- ==========================
 	-- CMP (автодополнение)
 	-- ==========================
@@ -275,45 +282,10 @@ M.plugins = {
 			"hrsh7th/cmp-nvim-lsp",
 			"hrsh7th/cmp-buffer",
 			"hrsh7th/cmp-path",
-			"saadparwaiz1/cmp_luasnip",
-			"L3MON4D3/LuaSnip",
 			"hrsh7th/cmp-vsnip",
 			"hrsh7th/vim-vsnip",
 		},
-		---@param cmp cmp.ConfigSchema
 		opts = function()
-			local cmp = require("cmp")
-			return {
-				snippet = {
-					expand = function(args)
-						vim.fn["vsnip#anonymous"](args.body)
-					end,
-				},
-				window = {
-					completion = cmp.config.window.bordered(),
-					documentation = cmp.config.window.bordered(),
-				},
-				mapping = cmp.mapping.preset.insert({
-					["<C-b>"] = cmp.mapping.scroll_docs(-4),
-					["<C-f>"] = cmp.mapping.scroll_docs(4),
-					["<C-Space>"] = cmp.mapping.complete(),
-					["<C-e>"] = cmp.mapping.abort(),
-					["<CR>"] = cmp.mapping.confirm({ select = true }),
-				}),
-				sources = cmp.config.sources({
-					{ name = "nvim_lsp" },
-					{ name = "vsnip" },
-				}, {
-					{ name = "buffer" },
-				}),
-			}
-		end,
-	},
-
-	-- cmdline настройки для cmp
-	{
-		"hrsh7th/nvim-cmp",
-		opts = function(_, opts)
 			local cmp = require("cmp")
 			cmp.setup.cmdline({ "/", "?" }, {
 				mapping = cmp.mapping.preset.cmdline(),
@@ -324,9 +296,20 @@ M.plugins = {
 				sources = cmp.config.sources({ { name = "path" } }, { { name = "cmdline" } }),
 				matching = { disallow_symbol_nonprefix_matching = false },
 			})
+			return {
+				snippet = { expand = function(args) vim.fn["vsnip#anonymous"](args.body) end },
+				window = { completion = cmp.config.window.bordered(), documentation = cmp.config.window.bordered() },
+				mapping = cmp.mapping.preset.insert({
+					["<C-b>"] = cmp.mapping.scroll_docs(-4),
+					["<C-f>"] = cmp.mapping.scroll_docs(4),
+					["<C-Space>"] = cmp.mapping.complete(),
+					["<C-e>"] = cmp.mapping.abort(),
+					["<CR>"] = cmp.mapping.confirm({ select = true }),
+				}),
+				sources = cmp.config.sources({ { name = "nvim_lsp" }, { name = "vsnip" } }, { { name = "buffer" } }),
+			}
 		end,
 	},
-
 	-- ==========================
 	-- TREESITTER
 	-- ==========================
@@ -335,7 +318,7 @@ M.plugins = {
 		build = ":TSUpdate",
 		event = { "BufReadPost", "BufNewFile" },
 		opts = {
-			ensure_installed = { "c", "cpp", "rust", "lua", "bash" },
+			ensure_installed = { "c", "cpp", "rust", "lua", "bash", "rust" },
 			highlight = { enable = true },
 			indent = { enable = true },
 		},
@@ -349,37 +332,6 @@ M.plugins = {
 	-- ==========================
 	-- RUSCMD (русские команды)
 	-- ==========================
-	{ "powerman/vim-plugin-ruscmd", lazy = true },
-
-	-- ==========================
-	-- LSP SERVER CONFIGS
-	-- ==========================
-	{
-		"neovim/nvim-lspconfig",
-		config = function()
-			local capabilities = require('cmp_nvim_lsp').default_capabilities()
-
-			-- clangd (C/C++)
-			require('lspconfig').clangd.setup {
-				capabilities = capabilities,
-			}
-
-			-- Lua
-			require('lspconfig').lua_ls.setup {
-				capabilities = capabilities,
-			}
-
-			-- Bash
-			require('lspconfig').bashls.setup {
-				capabilities = capabilities,
-			}
-
-			-- Rust
-			require('lspconfig').rust_analyzer.setup {
-				capabilities = capabilities,
-			}
-		end,
-	},
+	{ "powerman/vim-plugin-ruscmd", lazy = false },
 }
-
 return M.plugins

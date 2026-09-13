@@ -3,6 +3,7 @@
 
 local opt = vim.opt
 
+vim.g.ale_disable_lsp = 1
 opt.number = true
 opt.autoindent = true
 opt.encoding = 'utf-8'
@@ -16,3 +17,4 @@ opt.ignorecase = true
 opt.smartcase = true
 opt.clipboard:append('unnamedplus')
 opt.termguicolors = true -- MIGRATION: перенесено из plugins.lua
+
