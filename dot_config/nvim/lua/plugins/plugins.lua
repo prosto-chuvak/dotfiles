@@ -267,9 +267,25 @@ M.plugins = {
 			if ok then
 				vim.lsp.config("*", {
 					capabilities = cmp_lsp.default_capabilities(),
+					settings = {
+						["rust-analyzer"] = {
+							cargo = {
+								features = "all", -- Enable all features
+							},
+							procMacro = {
+								ignored = {
+									leptos_macro = {
+										-- optional: --
+										-- "component",
+										"server",
+									},
+								},
+							},
+						},
+					}
 				})
 			end
-			vim.lsp.enable({ "lua_ls", "bashls", "rust_analyzer" })
+			vim.lsp.enable({ "lua_ls", "bashls", "rust_analyzer", "pylsp" })
 		end,
 	},
 	-- ==========================
@@ -318,7 +334,7 @@ M.plugins = {
 		build = ":TSUpdate",
 		event = { "BufReadPost", "BufNewFile" },
 		opts = {
-			ensure_installed = { "c", "cpp", "rust", "lua", "bash", "rust" },
+			ensure_installed = { "c", "cpp", "rust", "lua", "bash", "rust", "python" },
 			highlight = { enable = true },
 			indent = { enable = true },
 		},
