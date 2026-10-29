@@ -126,7 +126,32 @@ M.plugins = {
 				lualine_a = { "mode" },
 				lualine_b = { "branch", "diff", "diagnostics" },
 				lualine_c = { "filename" },
-				lualine_x = { "encoding", "fileformat", "filetype" },
+				lualine_x = {
+					function()
+						local clients
+
+						if vim.lsp.get_clients then
+							clients = vim.lsp.get_clients({ bufnr = 0 })
+						else
+							clients = vim.lsp.get_active_clients({ bufnr = 0 })
+						end
+
+						if #clients == 0 then
+							return ""
+						end
+
+						local names = {}
+
+						for _, client in ipairs(clients) do
+							table.insert(names, client.name)
+						end
+
+						return "LSP:" .. table.concat(names, ",")
+					end,
+					"encoding",
+					"fileformat",
+					"filetype",
+				},
 				lualine_y = { "progress" },
 				lualine_z = { "location" },
 			},
@@ -238,10 +263,18 @@ M.plugins = {
 		dependencies = { "nvim-lua/plenary.nvim" },
 		cmd = "Telescope",
 		keys = {
-			{ "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find files" },
-			{ "<leader>fg", "<cmd>Telescope live_grep<cr>",  desc = "Live grep" },
-			{ "<leader>fb", "<cmd>Telescope buffers<cr>",    desc = "Buffers" },
-			{ "<leader>fh", "<cmd>Telescope help_tags<cr>",  desc = "Help tags" },
+			{ "<leader>:",  "<cmd>Telescope commands<cr>",              desc = "Commands" },
+			{ "<leader>ff", "<cmd>Telescope find_files<cr>",            desc = "Find files" },
+			{ "<leader>fg", "<cmd>Telescope live_grep<cr>",             desc = "Live grep" },
+			{ "<leader>fb", "<cmd>Telescope buffers<cr>",               desc = "Buffers" },
+			{ "<leader>fh", "<cmd>Telescope help_tags<cr>",             desc = "Help tags" },
+
+			{ "<leader>fd", "<cmd>Telescope diagnostics<cr>",           desc = "Diagnostics" },
+			{ "<leader>fs", "<cmd>Telescope lsp_document_symbols<cr>",  desc = "Document symbols" },
+			{ "<leader>fS", "<cmd>Telescope lsp_workspace_symbols<cr>", desc = "Workspace symbols" },
+			{ "<leader>fr", "<cmd>Telescope lsp_references<cr>",        desc = "References" },
+			{ "<leader>fi", "<cmd>Telescope lsp_implementations<cr>",   desc = "Implementations" },
+			{ "<leader>fa", "<cmd>Telescope lsp_code_actions<cr>",      desc = "Code actions" },
 		},
 		opts = {},
 	},
@@ -258,36 +291,172 @@ M.plugins = {
 	-- ==========================
 	-- LSP
 	-- ==========================
+
 	{
 		"neovim/nvim-lspconfig",
-		event = { "BufReadPre", "BufNewFile" },
+		event = { "BufReadPre", "BufNewFile", "VeryLazy" },
 		dependencies = { "hrsh7th/cmp-nvim-lsp" },
 		config = function()
-			local ok, cmp_lsp = pcall(require, "cmp_nvim_lsp")
-			if ok then
+			local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+			local ok_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
+			if ok_cmp then
+				capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
+			end
+
+			vim.diagnostic.config({
+				virtual_text = true,
+				signs = true,
+				underline = true,
+				severity_sort = true,
+				update_in_insert = false,
+			})
+
+			local on_attach = function(_, bufnr)
+				local map = function(lhs, rhs, desc)
+					vim.keymap.set("n", lhs, rhs, {
+						buffer = bufnr,
+						desc = desc,
+					})
+				end
+
+				map("gd", vim.lsp.buf.definition, "Definition")
+				map("gD", vim.lsp.buf.declaration, "Declaration")
+				map("gi", vim.lsp.buf.implementation, "Implementation")
+				map("gr", vim.lsp.buf.references, "References")
+				map("gK", vim.lsp.buf.hover, "Hover")
+
+				map("<leader>la", vim.lsp.buf.code_action, "Code action")
+				map("<leader>lf", function()
+					vim.lsp.buf.format({ async = true })
+				end, "Format")
+				map("<leader>lrn", vim.lsp.buf.rename, "Rename")
+
+				map("<leader>ld", vim.diagnostic.open_float, "Float diagnostics")
+				map("<leader>lq", vim.diagnostic.setloclist, "Loclist diagnostics")
+
+				map("[d", function()
+					vim.diagnostic.goto_prev({ float = true })
+				end, "Previous diagnostic")
+
+				map("]d", function()
+					vim.diagnostic.goto_next({ float = true })
+				end, "Next diagnostic")
+
+				map("<leader>lS", "<cmd>LspInfo<cr>", "LSP info")
+				map("<leader>lR", "<cmd>LspRestart<cr>", "Restart LSP")
+			end
+
+			if vim.lsp.enable then
 				vim.lsp.config("*", {
-					capabilities = cmp_lsp.default_capabilities(),
+					capabilities = capabilities,
+					on_attach = on_attach,
+				})
+
+				vim.lsp.config("rust_analyzer", {
 					settings = {
 						["rust-analyzer"] = {
+							check = {
+								command = "clippy",
+							},
 							cargo = {
-								features = "all", -- Enable all features
+								features = "all",
 							},
 							procMacro = {
 								ignored = {
 									leptos_macro = {
-										-- optional: --
-										-- "component",
 										"server",
 									},
 								},
 							},
 						},
-					}
+					},
 				})
+
+				vim.lsp.config("lua_ls", {
+					settings = {
+						Lua = {
+							diagnostics = {
+								globals = {
+									"vim",
+								},
+							},
+							workspace = {
+								library = {
+									vim.env.VIMRUNTIME,
+								},
+							},
+						},
+					},
+				})
+
+				vim.lsp.enable({
+					"lua_ls",
+					"bashls",
+					"rust_analyzer",
+					"pylsp",
+				})
+
+				return
 			end
-			vim.lsp.enable({ "lua_ls", "bashls", "rust_analyzer", "pylsp" })
+
+			local ok_lspconfig, lspconfig = pcall(require, "lspconfig")
+			if not ok_lspconfig then
+				return
+			end
+
+			local configs = {
+				rust_analyzer = {
+					settings = {
+						["rust-analyzer"] = {
+							cachePriming = { enabled = false },
+							check = {
+								command = "clippy",
+								workspace = false,
+							},
+							cargo = {
+								features = "default",
+							},
+							procMacro = {
+								ignored = {
+									leptos_macro = {
+										"server",
+									},
+								},
+							},
+						},
+					},
+				},
+				lua_ls = {
+					settings = {
+						Lua = {
+							diagnostics = {
+								globals = {
+									"vim",
+								},
+							},
+							workspace = {
+								library = {
+									vim.env.VIMRUNTIME,
+								},
+							},
+						},
+					},
+				},
+				bashls = {},
+				pylsp = {},
+			}
+
+			for name, opts in pairs(configs) do
+				if lspconfig[name] then
+					opts.capabilities = capabilities
+					opts.on_attach = on_attach
+					lspconfig[name].setup(opts)
+				end
+			end
 		end,
 	},
+
 	-- ==========================
 	-- CMP (автодополнение)
 	-- ==========================
@@ -343,7 +512,10 @@ M.plugins = {
 	-- ==========================
 	-- ALE (линтер)
 	-- ==========================
-	{ "dense-analysis/ale",         event = "BufReadPost" },
+	{
+		"dense-analysis/ale",
+		enabled = false,
+	},
 
 	-- ==========================
 	-- RUSCMD (русские команды)
