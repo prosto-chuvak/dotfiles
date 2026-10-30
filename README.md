@@ -1,6 +1,6 @@
 # dotfiles
 
-Personal Linux (Hyprland/Wayland) dotfiles: Hyprland, Mango WM, neovim, kitty, waybar, wofi/rofi, oh-my-posh, and wallpapers.
+Personal Linux dotfiles: Mango WM, neovim, kitty, waybar, wofi/rofi, oh-my-posh, and wallpapers.
 
 nvim plugins are managed by lazy.nvim and install on first launch.
 
@@ -15,7 +15,6 @@ chezmoi apply
 
 ## Components
 
-- `dot_config/hypr/` — Hyprland compositor (keybinds, locks, paper, snow, idle)
 - `dot_config/mango/` — Mango window manager
 - `dot_config/nvim/` — neovim (lazy.nvim, Catppuccin mocha, LSP: rust-analyzer/clippy, lua_ls, pylsp)
 - `dot_config/kitty/` — kitty terminal (themes)
